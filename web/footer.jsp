@@ -10,8 +10,8 @@
             <div class="footer-contact">
                 <h3>LIÊN HỆ</h3>
                 <p><a href="tel:+84977792577">+84 (0)97 792 xxx</a></p>
-                <p><a href="mailto:info@yourbuddy.com">info@yourbuddy.com</a></p>
-                <p><a href="mailto:apply@yourbuddy.com">apply@yourbuddy.com</a></p>
+                <p><a href="mailto:ndkhoi192@gmail.com">info@yourbuddy.com</a></p>
+                <p><a href="mailto:ndkhoi192@gmail.com">apply@yourbuddy.com</a></p>
             </div>
             <div class="footer-follow">
                 <h3>NETWORK</h3>
@@ -22,7 +22,7 @@
         </div>
         <div class="footer-bottom">
             <div class="container">
-                <p>©2024 YOUR BUDDY | All Rights Reserved</p>
+                <p>©2024 YOUR BUDDY | By ndkhoi192</p>
             </div>
         </div>
 </footer>
