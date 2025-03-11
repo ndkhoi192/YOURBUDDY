@@ -66,22 +66,22 @@
                 </form>
                 <div class="recipes-grid-container">
                     <aside class="recipes-sidebar">
-                        <form action="ListProduct" method="GET">
+                        <form action="ListProduct" method="GET"> <%-- COMBINED FILTER FORM --%>
                             <div class="filter-group">
                                 <div class="filter-header">Sắp xếp theo <i class="fas fa-chevron-down"></i></div>
                                 <div class="filter-options">
-                                    <select name="sortBy" onchange="this.form.submit()">
+                                    <select name="sortBy" > 
                                         <option value="">-- Chọn tiêu chí --</option>
                                         <option value="priceAsc" ${param.sortBy == 'priceAsc' ? 'selected' : ''}>Giá tăng dần</option>
                                         <option value="priceDesc" ${param.sortBy == 'priceDesc' ? 'selected' : ''}>Giá giảm dần</option>
                                         <option value="stockAsc" ${param.sortBy == 'stockAsc' ? 'selected' : ''}>Số lượng bán ra nhiều</option>
                                         <option value="ratingDesc" ${param.sortBy == 'ratingDesc' ? 'selected' : ''}>Đánh giá cao nhất</option>
                                     </select>
-                                    <button type="button" onclick="resetFilter()">Đặt lại</button>
+                                    
+                                    <button class="filter-submit"  type="button" onclick="resetFilter()">ĐẶT LẠI</button>
                                 </div>
                             </div>
-                        </form>
-                        <form action="shopproduct.jsp" method="GET">
+
                             <div class="filter-group">
                                 <div class="filter-header">Danh mục <i class="fas fa-chevron-down"></i></div>
                                 <div class="filter-options">
@@ -95,6 +95,7 @@
                                     </ul>
                                 </div>
                             </div>
+
                             <div class="filter-group">
                                 <div class="filter-header">Loại thú cưng <i class="fas fa-chevron-down"></i></div>
                                 <div class="filter-options">
@@ -105,6 +106,7 @@
                                     </ul>
                                 </div>
                             </div>
+
                             <div class="filter-group">
                                 <div class="filter-header">Giá tiền <i class="fas fa-chevron-down"></i></div>
                                 <div class="filter-options">
@@ -114,46 +116,16 @@
                                         <li><label><input type="checkbox" name="price" value="200000-500000" ${fn:contains(paramValues.price, '200000-500000') ? 'checked' : ''}> 200.000 - 500.000</label></li>
                                         <li><label><input type="checkbox" name="price" value="500000+" ${fn:contains(paramValues.price, '500000+') ? 'checked' : ''}> Trên 500.000</label></li>
                                     </ul>
-
                                 </div>
                             </div>
-                            <button class="filter-submit" type="submit">ÁP DỤNG</button>
-                        </form>
+                                <button class="filter-submit" type="submit">ÁP DỤNG</button>
+                        </form> 
                     </aside>
                     <main id="sanpham" class="recipes-grid">
-                        <c:forEach var="p" items="${products}" varStatus="loop">
-                            <c:set var="finalPrice" value="${p.price * (1 - p.discount / 100)}"/>
-                            <c:set var="priceCondition" value="false" />
-                            <c:choose>
-                                <c:when test="${empty paramValues.price}">
-                                    <c:set var="priceCondition" value="true" />
-                                </c:when>
-                                <c:otherwise>
-                                    <c:forEach var="priceRange" items="${paramValues.price}">
-                                        <c:choose>
-                                            <c:when test="${priceRange == '0-100000' and finalPrice >= 0 and finalPrice <= 100000}">
-                                                <c:set var="priceCondition" value="true" />
-                                            </c:when>
-                                            <c:when test="${priceRange == '100000-200000' and finalPrice > 100000 and finalPrice <= 200000}">
-                                                <c:set var="priceCondition" value="true" />
-                                            </c:when>
-                                            <c:when test="${priceRange == '200000-500000' and finalPrice > 200000 and finalPrice <= 500000}">
-                                                <c:set var="priceCondition" value="true" />
-                                            </c:when>
-                                            <c:when test="${priceRange == '500000+' and finalPrice > 500000}">
-                                                <c:set var="priceCondition" value="true" />
-                                            </c:when>
-                                        </c:choose>
-                                    </c:forEach>
-                                </c:otherwise>
-                            </c:choose>
-                            <c:if test="${(empty param.category or p.cateID == param.category) 
-                                          and (empty paramValues.pet or fn:contains(paramValues.pet, p.petID)) 
-                                          and priceCondition
-                                          and (empty param.searchName or fn:containsIgnoreCase(p.productName, param.searchName))}">
-
+                        <c:forEach var="p" items="${products}" varStatus="loop"> 
+                            <c:if test="${(empty param.searchName or fn:containsIgnoreCase(p.productName, param.searchName))}">
                                   <c:if test="${p.stock > 0}">
-                                      <div class="recipe-card">
+                                      <div style="max-height: 350px;" class="recipe-card">
                                           <a style="text-decoration: none;" href="ProductDetail?productID=${p.productID}" class="recipe-card-link">
                                               <img src="${p.imageURL}" alt="${p.productName}">
                                               <h3>${p.productName}</h3>
@@ -164,7 +136,7 @@
                                                           <fmt:formatNumber type="currency" currencySymbol="₫" value="${p.price}" maxFractionDigits="0"/>
                                                       </del>
                                                       <strong style="padding-left: 5px;">
-                                                          <fmt:formatNumber type="currency" currencySymbol="₫" value="${finalPrice}" maxFractionDigits="0"/>
+                                                          <fmt:formatNumber type="currency" currencySymbol="₫" value="${p.getFinalPrice()}" maxFractionDigits="0"/>
                                                       </strong>
                                                   </p>
                                               </c:if>
@@ -180,7 +152,7 @@
                                           </a>
                                       </div>
                                   </c:if>
-                            </c:if>
+                                  </c:if>
                         </c:forEach>
 
                         <c:if test="${empty products}">
@@ -232,7 +204,7 @@
         <script src="js/product.js"></script>
         <script>
             function resetFilter() {
-                window.location.href = "ListProduct";
+                window.location.href = "ListProduct"; // Reset filter now goes to ListProduct to clear params
             }
         </script>
     </body>

@@ -2,14 +2,14 @@ package controller.loaddata;
 
 import dal.ProductDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.Comparator;
-import java.util.List;
 import model.Product;
 
 public class ListProduct extends HttpServlet {
@@ -19,38 +19,108 @@ public class ListProduct extends HttpServlet {
             throws ServletException, IOException {
         ProductDAO productDAO = new ProductDAO();
         List<Product> productList = productDAO.getAllProducts();
+        List<Product> filteredProducts = new ArrayList<>(productList); // Create a copy for filtering
 
         HttpSession session = request.getSession();
         String sortBy = request.getParameter("sortBy");
+        String[] categoryParams = request.getParameterValues("category"); // Get category parameters
+        String[] petParams = request.getParameterValues("pet"); // Get pet parameters
+        String[] priceParams = request.getParameterValues("price"); // Get price parameters
+        String searchName = request.getParameter("searchName"); // Get search name
 
+        // **Sorting Logic (Existing):**
         if (sortBy != null) {
             switch (sortBy) {
                 case "priceAsc":
-                    productList.sort(Comparator.comparingDouble(Product::getFinalPrice));
+                    filteredProducts.sort(Comparator.comparingDouble(Product::getFinalPrice));
                     break;
                 case "priceDesc":
-                    productList.sort(Comparator.comparingDouble(Product::getFinalPrice).reversed());
+                    filteredProducts.sort(Comparator.comparingDouble(Product::getFinalPrice).reversed());
                     break;
                 case "stockAsc":
-                    productList.sort(Comparator.comparingInt(Product::getStock));
+                    filteredProducts.sort(Comparator.comparingInt(Product::getStock));
                     break;
                 case "ratingDesc":
-                    productList.sort(Comparator.comparingDouble(Product::getRating).reversed());
+                    filteredProducts.sort(Comparator.comparingDouble(Product::getRating).reversed());
                     break;
             }
         }
-        session.setAttribute("products", productList);
+
+        // **Filtering Logic (New):**
+        if (categoryParams != null) {
+            List<Product> tempProducts = new ArrayList<>(filteredProducts);
+            filteredProducts.clear();
+            for (Product p : tempProducts) {
+                for (String catId : categoryParams) {
+                    if (String.valueOf(p.getCateID()).equals(catId)) {
+                        filteredProducts.add(p);
+                        break; // Avoid adding duplicate products if they match multiple categories (shouldn't happen based on your data model, but good practice)
+                    }
+                }
+            }
+        }
+
+        if (petParams != null) {
+            List<Product> tempProducts = new ArrayList<>(filteredProducts);
+            filteredProducts.clear();
+            for (Product p : tempProducts) {
+                for (String petId : petParams) {
+                    if (String.valueOf(p.getPetID()).equals(petId)) {
+                        filteredProducts.add(p);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (priceParams != null) {
+            List<Product> tempProducts = new ArrayList<>(filteredProducts);
+            filteredProducts.clear();
+            for (Product p : tempProducts) {
+                double finalPrice = p.getFinalPrice();
+                for (String priceRange : priceParams) {
+                    if (priceRange.equals("0-100000") && finalPrice >= 0 && finalPrice <= 100000) {
+                        filteredProducts.add(p);
+                        break;
+                    } else if (priceRange.equals("100000-200000") && finalPrice > 100000 && finalPrice <= 200000) {
+                        filteredProducts.add(p);
+                        break;
+                    } else if (priceRange.equals("200000-500000") && finalPrice > 200000 && finalPrice <= 500000) {
+                        filteredProducts.add(p);
+                        break;
+                    } else if (priceRange.equals("500000+") && finalPrice > 500000) {
+                        filteredProducts.add(p);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // **Search Name Filtering (Moved to Servlet for consistency, optional - you could keep it in JSP if preferred):**
+        if (searchName != null && !searchName.trim().isEmpty()) {
+            List<Product> tempProducts = new ArrayList<>(filteredProducts);
+            filteredProducts.clear();
+            String lowerSearchName = searchName.trim().toLowerCase();
+            for (Product p : tempProducts) {
+                if (p.getProductName().toLowerCase().contains(lowerSearchName)) {
+                    filteredProducts.add(p);
+                }
+            }
+        }
+
+
+        session.setAttribute("products", filteredProducts);
         response.sendRedirect("shopproduct.jsp");
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        doGet(request, response); // Handle POST requests the same way as GET for filters
     }
 
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
-
+    }
 }

@@ -47,7 +47,7 @@
         <div style="margin-top: 30px; background-color: white; padding: 20px;" class="container">
             <h1>DANH SÁCH SẢN PHẨM</h1>
             <div class="button-container" style="text-align: right; margin-bottom: 20px;">
-                <a style="text-decoration: none;" href="addproduct.jsp" class="add-product-btn">Add Product</a>
+                <a style="text-decoration: none;" href="${pageContext.request.contextPath}/AddProduct" class="add-product-btn">Add Product</a>
             </div>
             <form action="listproduct.jsp" method="GET">
                 <label class="label" for="searchName">Tìm kiếm:</label>
