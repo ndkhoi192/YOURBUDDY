@@ -7,7 +7,7 @@ Có sự tham khảo các website bán hàng và website bán đồ cho thú cư
 Em xin cảm ơn.
 
 ## Công nghệ sử dụng
-- **Techs:** Java, JSP, HTML, CSS, JavaScript
+- **Techs:** Java, CSS, JavaScript
 - **Sử dụng:** Jakarta EE, JDBC, JSTL
 - **Cơ sở dữ liệu:** MySQL
 
