@@ -40,7 +40,7 @@
             <div class="container">
                 <div class="header-top">
                     <div class="logo">
-                        <a href="${pageContext.request.contextPath}/adminhome.jsp"><img src="../css/images/2.png" alt="Logo Website"></a>
+                        <a href="${pageContext.request.contextPath}/adminpage/adminhome.jsp"><img src="../css/images/2.png" alt="Logo Website"></a>
                     </div>
                     <nav style="margin: 0;" class="top-nav right-nav">
                         <ul style="margin: 0">
