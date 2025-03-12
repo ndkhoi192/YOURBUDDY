@@ -19,16 +19,15 @@ public class ListProduct extends HttpServlet {
             throws ServletException, IOException {
         ProductDAO productDAO = new ProductDAO();
         List<Product> productList = productDAO.getAllProducts();
-        List<Product> filteredProducts = new ArrayList<>(productList); // Create a copy for filtering
+        List<Product> filteredProducts = new ArrayList<>(productList); 
 
         HttpSession session = request.getSession();
         String sortBy = request.getParameter("sortBy");
-        String[] categoryParams = request.getParameterValues("category"); // Get category parameters
-        String[] petParams = request.getParameterValues("pet"); // Get pet parameters
-        String[] priceParams = request.getParameterValues("price"); // Get price parameters
-        String searchName = request.getParameter("searchName"); // Get search name
+        String[] categoryParams = request.getParameterValues("category"); 
+        String[] petParams = request.getParameterValues("pet"); 
+        String[] priceParams = request.getParameterValues("price"); 
+        String searchName = request.getParameter("searchName"); 
 
-        // **Sorting Logic (Existing):**
         if (sortBy != null) {
             switch (sortBy) {
                 case "priceAsc":
@@ -46,7 +45,6 @@ public class ListProduct extends HttpServlet {
             }
         }
 
-        // **Filtering Logic (New):**
         if (categoryParams != null) {
             List<Product> tempProducts = new ArrayList<>(filteredProducts);
             filteredProducts.clear();
@@ -54,7 +52,7 @@ public class ListProduct extends HttpServlet {
                 for (String catId : categoryParams) {
                     if (String.valueOf(p.getCateID()).equals(catId)) {
                         filteredProducts.add(p);
-                        break; // Avoid adding duplicate products if they match multiple categories (shouldn't happen based on your data model, but good practice)
+                        break; 
                     }
                 }
             }
@@ -96,7 +94,6 @@ public class ListProduct extends HttpServlet {
             }
         }
 
-        // **Search Name Filtering (Moved to Servlet for consistency, optional - you could keep it in JSP if preferred):**
         if (searchName != null && !searchName.trim().isEmpty()) {
             List<Product> tempProducts = new ArrayList<>(filteredProducts);
             filteredProducts.clear();
@@ -116,7 +113,7 @@ public class ListProduct extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        doGet(request, response); // Handle POST requests the same way as GET for filters
+        doGet(request, response); 
     }
 
     @Override
