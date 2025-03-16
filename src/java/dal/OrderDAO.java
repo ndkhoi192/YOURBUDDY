@@ -196,4 +196,12 @@ public class OrderDAO extends DBContext {
         }
         return orders;
     }
+    
+    public List<Order> getListByPage(List<Order> list, int start, int end) {
+        ArrayList<Order> arr = new ArrayList<>();
+        for (int i = start; i < end; i++) {
+            arr.add(list.get(i));
+        }
+        return arr;
+    }
 }

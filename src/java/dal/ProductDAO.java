@@ -33,6 +33,14 @@ public class ProductDAO extends DBContext {
         return products;
     }
 
+    public List<Product> getListByPage(List<Product> list, int start, int end) {
+        ArrayList<Product> arr = new ArrayList<>();
+        for (int i = start; i < end; i++) {
+            arr.add(list.get(i));
+        }
+        return arr;
+    }
+    
     public Product getProductByID(int productID) {
         String sql = "SELECT * FROM Product WHERE productID = ?";
         try (PreparedStatement pre = connection.prepareStatement(sql)) {

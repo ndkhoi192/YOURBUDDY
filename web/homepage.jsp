@@ -83,7 +83,7 @@
                         <div class="product-card">
                             <a style="text-decoration: none;" href="ProductDetail?productID=${p.productID}" class="recipe-card-link">
                                 <img src="${p.imageURL}" alt="${p.productName}">
-                                <h3>${p.productName}</h3>
+                                <h3 style="height: 70px;">${p.productName}</h3>
                                 <p class="price">
                                     <strong>
                                         <fmt:formatNumber type="currency" currencySymbol="₫" value="${p.price}" maxFractionDigits="0" />

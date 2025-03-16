@@ -9,7 +9,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.stream.Collectors;
 import model.Product;
 
 public class ListProduct extends HttpServlet {
@@ -19,14 +21,22 @@ public class ListProduct extends HttpServlet {
             throws ServletException, IOException {
         ProductDAO productDAO = new ProductDAO();
         List<Product> productList = productDAO.getAllProducts();
-        List<Product> filteredProducts = new ArrayList<>(productList); 
+        List<Product> filteredProducts = new ArrayList<>(productList);
 
         HttpSession session = request.getSession();
         String sortBy = request.getParameter("sortBy");
-        String[] categoryParams = request.getParameterValues("category"); 
-        String[] petParams = request.getParameterValues("pet"); 
-        String[] priceParams = request.getParameterValues("price"); 
-        String searchName = request.getParameter("searchName"); 
+        String[] categoryParams = request.getParameterValues("category");
+        String[] petParams = request.getParameterValues("pet");
+        String[] priceParams = request.getParameterValues("price");
+        String searchName = request.getParameter("searchName");
+
+        System.out.println("--- Bắt đầu xử lý request ---"); 
+        System.out.println("Trang yêu cầu: " + request.getParameter("page")); 
+        System.out.println("searchName: " + searchName);
+        System.out.println("sortBy: " + sortBy);
+        System.out.println("categoryParams: " + Arrays.toString(categoryParams)); 
+        System.out.println("petParams: " + Arrays.toString(petParams)); 
+        System.out.println("priceParams: " + Arrays.toString(priceParams)); 
 
         if (sortBy != null) {
             switch (sortBy) {
@@ -50,9 +60,9 @@ public class ListProduct extends HttpServlet {
             filteredProducts.clear();
             for (Product p : tempProducts) {
                 for (String catId : categoryParams) {
-                    if (String.valueOf(p.getCateID()).equals(catId)) {
+                    if (String.valueOf(p.getCateID()).equals(catId.trim())) {
                         filteredProducts.add(p);
-                        break; 
+                        break;
                     }
                 }
             }
@@ -63,7 +73,7 @@ public class ListProduct extends HttpServlet {
             filteredProducts.clear();
             for (Product p : tempProducts) {
                 for (String petId : petParams) {
-                    if (String.valueOf(p.getPetID()).equals(petId)) {
+                    if (String.valueOf(p.getPetID()).equals(petId.trim())) {
                         filteredProducts.add(p);
                         break;
                     }
@@ -77,16 +87,18 @@ public class ListProduct extends HttpServlet {
             for (Product p : tempProducts) {
                 double finalPrice = p.getFinalPrice();
                 for (String priceRange : priceParams) {
-                    if (priceRange.equals("0-100000") && finalPrice >= 0 && finalPrice <= 100000) {
+                    String trimmedPriceRange = priceRange.trim(); 
+
+                    if (trimmedPriceRange.equals("0-100000") && finalPrice >= 0 && finalPrice <= 100000) {
                         filteredProducts.add(p);
                         break;
-                    } else if (priceRange.equals("100000-200000") && finalPrice > 100000 && finalPrice <= 200000) {
+                    } else if (trimmedPriceRange.equals("100000-200000") && finalPrice > 100000 && finalPrice <= 200000) {
                         filteredProducts.add(p);
                         break;
-                    } else if (priceRange.equals("200000-500000") && finalPrice > 200000 && finalPrice <= 500000) {
+                    } else if (trimmedPriceRange.equals("200000-500000") && finalPrice > 200000 && finalPrice <= 500000) {
                         filteredProducts.add(p);
                         break;
-                    } else if (priceRange.equals("500000+") && finalPrice > 500000) {
+                    } else if (trimmedPriceRange.equals("500000+") && finalPrice > 500000) {
                         filteredProducts.add(p);
                         break;
                     }
@@ -105,15 +117,49 @@ public class ListProduct extends HttpServlet {
             }
         }
 
+        List<Product> outOfStockProducts = filteredProducts.stream()
+                .filter(p -> p.getStock() == 0)
+                .collect(Collectors.toList());
 
-        session.setAttribute("products", filteredProducts);
+        List<Product> inStockProducts = filteredProducts.stream()
+                .filter(p -> p.getStock() > 0)
+                .collect(Collectors.toList());
+
+        int page, numperpage = 16;
+        int size = inStockProducts.size();
+
+        int numpage = (size % numperpage == 0 ? (size / numperpage) : ((size / numperpage)) + 1);
+        String xpage = request.getParameter("page");
+        if (xpage == null) {
+            page = 1;
+        } else {
+            page = Integer.parseInt(xpage.trim());
+        }
+
+        int start, end;
+        start = (page - 1) * numperpage;
+        end = Math.min(page * numperpage, size);
+
+        List<Product> list = productDAO.getListByPage(inStockProducts, start, end);
+
+        session.setAttribute("page", page);
+        session.setAttribute("numpage", numpage);
+        session.setAttribute("products", list);
+        session.setAttribute("outstockproducts", outOfStockProducts);
+
+        session.setAttribute("searchName", searchName);
+        session.setAttribute("sortBy", sortBy);
+        session.setAttribute("categoryParams", categoryParams);
+        session.setAttribute("petParams", petParams);
+        session.setAttribute("priceParams", priceParams);
+
         response.sendRedirect("shopproduct.jsp");
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        doGet(request, response); 
+        doGet(request, response);
     }
 
     @Override

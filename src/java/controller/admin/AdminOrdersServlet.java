@@ -29,13 +29,37 @@ public class AdminOrdersServlet extends HttpServlet {
         String sort = request.getParameter("sort");
 
         OrderDAO orderDAO = new OrderDAO();
+        if (sort==null){
+            sort="date_desc";
+        } 
         List<Order> orders = orderDAO.getAllOrders(sort);
-
-        if (orders == null) {
-            orders = Collections.emptyList();
+        
+        int page, numperpage = 10;
+        int size = orders.size();
+        
+        int numpage = (size % numperpage == 0 ? (size/numperpage) : ((size/numperpage)) + 1);
+        String xpage = request.getParameter("page");
+        if(xpage == null) {
+            page = 1;
+        } else {
+            page = Integer.parseInt(xpage);
+        }
+        
+        int start, end;
+        start = (page - 1) * numperpage;
+        end = Math.min(page * numperpage, size);
+        
+        List<Order> list = orderDAO.getListByPage(orders, start, end);
+          
+        session.setAttribute("page", page);
+        session.setAttribute("numpage", numpage);
+        
+        if (list == null) {
+            list = Collections.emptyList();
         }
 
-        session.setAttribute("orders", orders);
+        session.setAttribute("sort", sort); 
+        session.setAttribute("orders", list);
         response.sendRedirect("adminpage/adminorders.jsp");
     }
 

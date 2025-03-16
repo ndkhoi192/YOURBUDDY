@@ -121,6 +121,14 @@ public class AccountDAO extends DBContext {
         return list;
     }
 
+    public List<Account> getListByPage(List<Account> list, int start, int end) {
+        ArrayList<Account> arr = new ArrayList<>();
+        for (int i = start; i < end; i++) {
+            arr.add(list.get(i));
+        }
+        return arr;
+    }
+    
     public List<Account> getAccountsByFilter(String searchName, Integer role) {
         List<Account> list = new ArrayList<>();
         String sql = "SELECT * FROM Account WHERE 1=1";

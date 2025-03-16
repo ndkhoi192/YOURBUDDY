@@ -5,7 +5,7 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> <%-- Add viewport meta tag --%>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
         <title>Quản lý đơn hàng</title>
         <link rel="stylesheet" href="../css/home.css">
         <link rel="stylesheet" href="admincss/home.css">
@@ -16,6 +16,36 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <style>
+            .pagination {
+                text-align: center;
+                margin: 20px 0;
+            }
+
+            .pagination a {
+                display: inline-block;
+                padding: 8px 12px;
+                margin: 0 5px;
+                text-decoration: none;
+                color: #333;
+                background-color: #f0f0f0;
+                border-radius: 5px;
+                border: 1px solid #ccc;
+                transition: 0.3s;
+            }
+
+            .pagination a:hover {
+                background-color: #014576;
+                color: white;
+                border-color: #014576;
+            }
+
+            .pagination a.active {
+                background-color: #014576;
+                color: white;
+                font-weight: bold;
+                border-color: #014576;
+            }
+            
             .update-status-form select{
                 font-family: 'Nunito', sans-serif;
             }
@@ -99,7 +129,12 @@
                     </table>
                 </c:otherwise>
             </c:choose>
-            <a href = "${pageContext.request.contextPath}/adminhome.jsp" class = "btn btn-secondary" style = "display: block; margin: 20px auto; width: fit-content;">Về trang chủ</a>
+            <div class="pagination">
+                <c:forEach begin="${1}" end="${sessionScope.numpage}" var="i">
+                    <a class="${i==page?"active":""}" href="${pageContext.request.contextPath}/adminorders?page=${i}&sort=${sessionScope.sort}">${i}</a>
+                </c:forEach>
+            </div>
+            <a href = "${pageContext.request.contextPath}/adminpage/adminhome.jsp" class = "btn btn-secondary" style = "display: block; margin: 20px auto; width: fit-content;">Về trang chủ</a>
         </div>
         <jsp:include page="../footer.jsp" />
     </body>
