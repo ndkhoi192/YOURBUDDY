@@ -9,7 +9,7 @@ Em xin cảm ơn.
 ## Công nghệ sử dụng
 - **Techs:** Java, CSS, JavaScript
 - **Sử dụng:** Jakarta EE, JDBC, JSTL
-- **Cơ sở dữ liệu:** MySQL
+- **Cơ sở dữ liệu:** SQLServer
 
 ## Cài đặt
 1. **Clone repository:**
